@@ -1,3 +1,5 @@
+import java.util.HashMap;
+import java.util.Stack;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -47,17 +49,48 @@ public class App {
          */
         System.out.println("Hello, World!");
 
-        ListNode list = new ListNode(1);
-        ListNode node2 = new ListNode(2);
-        ListNode node3 = new ListNode(3);
-        ListNode node4 = new ListNode(4);
-        ListNode node5 = new ListNode(5);
-        list.next = node2; // 1 -> 2
-        node2.next = node3; // 2 -> 3
-        node3.next = node4; // 3 -> 4
-        node4.next = node5; // 4 -> 5
-        System.out.println("The given list is:");
-        printList(list);
+        /*
+         * ListNode list = new ListNode(1);
+         * ListNode node2 = new ListNode(2);
+         * ListNode node3 = new ListNode(3);
+         * ListNode node4 = new ListNode(4);
+         * ListNode node5 = new ListNode(5);
+         * list.next = node2; // 1 -> 2
+         * node2.next = node3; // 2 -> 3
+         * node3.next = node4; // 3 -> 4
+         * node4.next = node5; // 4 -> 5
+         * System.out.println("The given list is:");
+         * printList(list);
+         */
+
+        Solution solution = new Solution();
+
+        // Test Case 1: Simple case with one node and no random pointer.
+        ListNode node1 = new ListNode(1, null, null);
+        executeTest(solution, node1, "Test Case 1");
+
+        // Test Case 2: Two nodes with next pointer only.
+        ListNode node2 = new ListNode(1, new ListNode(2, null, null), null);
+        executeTest(solution, node2, "Test Case 2");
+
+        // Test Case 3: Two nodes where random points back to the first node.
+        ListNode node3 = new ListNode(1, new ListNode(2, null, null), null);
+        node3.random = node3; // Random points to itself
+        executeTest(solution, node3, "Test Case 3");
+
+        // Test Case 4: Multiple nodes with complex random pointers.
+        ListNode node4 = new ListNode(1, null, null);
+        ListNode node5 = new ListNode(2, null, null);
+        ListNode node6 = new ListNode(3, null, null);
+        node4.next = node5;
+        node5.next = node6;
+        node4.random = node6; // Random from 1 to 3
+        node5.random = node4; // Random from 2 to 1
+        node6.random = null; // Random from 3 to null
+        executeTest(solution, node4, "Test Case 4");
+
+        // Test Case 5: No nodes, should return null.
+        executeTest(solution, null, "Test Case 5");
 
     }
 
@@ -85,5 +118,36 @@ public class App {
             current = current.next;
         }
         System.out.println();
+    }
+
+    private static void executeTest(Solution solution, ListNode head, String testName) {
+        ListNode copiedList = solution.copyRandomList(head);
+        printList(head, copiedList, testName);
+    }
+
+    private static void printList(ListNode original, ListNode copied, String testName) {
+        System.out.println(testName + ":");
+        System.out.println("Original List:");
+        printNodes(original);
+        System.out.println("Copied List:");
+        printNodes(copied);
+        System.out.println();
+    }
+
+    private static void printNodes(ListNode node) {
+        HashMap<ListNode, Integer> addresses = new HashMap<>();
+        int count = 0;
+
+        while (node != null) {
+            System.out.print("Node value: " + node.val);
+            addresses.put(node, count++);
+            if (node.random != null) {
+                System.out.print(", Random points to: " + node.random.val);
+            } else {
+                System.out.print(", Random points to: null");
+            }
+            System.out.println();
+            node = node.next;
+        }
     }
 }
